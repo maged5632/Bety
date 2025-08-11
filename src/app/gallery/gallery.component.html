@@ -1,0 +1,11 @@
+<div class="list">
+  <button class="item" *ngFor="let img of images" (click)="pick(img)" [title]="img.name">
+    <img class="thumb" [src]="img.src" alt="thumbnail">
+    <div class="meta">
+      <div class="name">{{img.name}}</div>
+      <div class="dim">
+        {{img.width || '—'}}×{{img.height || '—'}}
+      </div>
+    </div>
+  </button>
+</div>

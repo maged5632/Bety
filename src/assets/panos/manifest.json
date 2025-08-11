@@ -1,0 +1,26 @@
+[
+  {
+    "name": "pano1.jpg",
+    "src": "assets/panos/pano1.jpg",
+    "width": 4096,
+    "height": 2048
+  },
+  {
+    "name": "pano2.jpg",
+    "src": "assets/panos/pano2.jpg",
+    "width": 4096,
+    "height": 2048
+  },
+  {
+    "name": "pano3.jpg",
+    "src": "assets/panos/pano3.jpg",
+    "width": 4096,
+    "height": 2048
+  },
+  {
+    "name": "pano4.jpg",
+    "src": "assets/panos/pano4.jpg",
+    "width": 4096,
+    "height": 2048
+  }
+]

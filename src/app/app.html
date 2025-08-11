@@ -1,2 +1,17 @@
-<h1>Hello1</h1>
-<h1> bye</h1>
+<!-- src/app/app.html -->
+<header class="hdr">
+  <h1>Home Tour 360 <span class="badge">{{images().length}} images</span></h1>
+</header>
+
+<div class="wrap">
+  <aside class="sidebar">
+    <app-gallery
+      [images]="images()"
+      (selectPano)="onSelect($event)">
+    </app-gallery>
+  </aside>
+  <main class="viewer">
+    <div class="hint" *ngIf="!current()">Select an image from the left. Use 2:1 equirectangular panoramas for best results.</div>
+    <app-pan360-viewer [pano]="current()"></app-pan360-viewer>
+  </main>
+</div>

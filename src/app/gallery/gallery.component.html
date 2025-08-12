@@ -1,11 +1,13 @@
-<div class="list">
-  <button class="item" *ngFor="let img of images" (click)="pick(img)" [title]="img.name">
-    <img class="thumb" [src]="img.src" alt="thumbnail">
+<div class="wrap" *ngIf="items?.length; else empty">
+  <a class="card" *ngFor="let it of items" [routerLink]="['/view', it.id]">
+    <img class="thumb" [src]="it.thumb" [alt]="it.name" loading="lazy" />
     <div class="meta">
-      <div class="name">{{img.name}}</div>
-      <div class="dim">
-        {{img.width || '—'}}×{{img.height || '—'}}
-      </div>
+      <h3>{{ it.name }}</h3>
+      <p>Open 360° view</p>
     </div>
-  </button>
+  </a>
 </div>
+
+<ng-template #empty>
+  <p class="empty">No images found.</p>
+</ng-template>

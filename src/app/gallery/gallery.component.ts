@@ -1,25 +1,16 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-export interface Pano {
-  name: string;
-  src: string;
-  width?: number;
-  height?: number;
-}
+// src/app/gallery/gallery.component.ts
+import { Component } from '@angular/core';
+import { NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { HOME_TOUR } from '../tour.data';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgFor, NgIf, RouterLink],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.css']
 })
 export class GalleryComponent {
-  @Input() images: Pano[] = [];
-  @Output() selectPano = new EventEmitter<Pano>();
-
-  pick(p: Pano) {
-    this.selectPano.emit(p);
-  }
+  items = HOME_TOUR.map(s => ({ id: s.id, name: s.name, thumb: s.imageUrl }));
 }

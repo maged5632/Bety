@@ -1,1 +1,5 @@
-#panoContainer{position:absolute;inset:0}
+/* full-bleed viewer */
+#panoContainer {
+  position: fixed;
+  inset: 0;
+}

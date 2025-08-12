@@ -1,0 +1,31 @@
+.wrap {
+  height: 100%;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  overflow: auto;
+}
+.card {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+
+/* Make images show like backgrounds would */
+.thumb {
+  width: 100%;
+  height: 160px;       /* or 200–240 if you prefer taller cards */
+  object-fit: cover;   /* crop to fill nicely */
+  display: block;
+}
+
+.meta { padding: 12px; }
+.meta h3 { margin: 0 0 6px; font-size: 16px; }
+.empty { padding: 24px; text-align: center; }

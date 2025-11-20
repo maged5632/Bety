@@ -1,0 +1,108 @@
+/* src/app/property-details/property-details.component.css */
+
+/* Overall container */
+.details {
+  max-width: 1000px;
+  margin: 32px auto;
+  padding: 24px;
+  background: #020617;
+  border-radius: 16px;
+  border: 1px solid #1f2933;
+  color: #e5e7eb;
+}
+
+/* Header title + address */
+.header .title {
+  font-size: 28px;
+  margin: 0 0 4px;
+}
+
+.header .address {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0 0 20px;
+}
+
+/* Two-column layout */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 24px;
+}
+
+/* Left: image */
+.media .hero-image {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* Right: info section */
+.info .price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f97316;
+  margin-bottom: 8px;
+}
+
+.info .stats {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: #cbd5f5;
+  margin-bottom: 16px;
+}
+
+.info .stats span::before {
+  content: "• ";
+}
+.info .stats span:first-child::before {
+  content: "";
+}
+
+.info .description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e5e7eb;
+  margin-bottom: 20px;
+}
+
+/* Primary CTA button */
+.btn-primary {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #f97316;
+  color: #111827;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  margin-right: 12px;
+}
+
+/* Back link */
+.back-link {
+  font-size: 13px;
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  /* Inline 360 viewer block below the main layout */
+.inline-tour {
+  margin-top: 32px;
+}
+
+.inline-title {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+}

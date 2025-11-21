@@ -1,38 +1,86 @@
 // src/app/gallery/gallery.component.ts
 
-import { Component } from '@angular/core';
-// Common Angular building blocks used in the template:
-// - NgFor: for *ngFor loops
-// - NgIf: for *ngIf conditions
-// - DecimalPipe: the "number" pipe we use to format prices
-import { NgFor, NgIf, DecimalPipe } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
-// Property data model + demo list of properties
-import { PROPERTIES, Property } from '../property.data';
+import { Property } from '../property.data';
+import { PropertyService } from '../property.service';
 
+/**
+ * GalleryComponent
+ * ----------------
+ * Shows a grid of property cards + filter bar.
+ * Data now comes from PropertyService (which loads JSON).
+ */
 @Component({
   selector: 'app-gallery',
   standalone: true,
-
-  /**
-   * Standalone components MUST declare every directive/pipe they use here.
-   * If you forget DecimalPipe, Angular will say:
-   *   "No pipe found with name 'number'."
-   */
-  imports: [NgFor, NgIf, RouterLink, DecimalPipe],
-
+  imports: [CommonModule, RouterLink, DecimalPipe, FormsModule],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.css']
 })
-export class GalleryComponent {
+export class GalleryComponent implements OnInit, OnDestroy {
+  /** All properties from the service. */
+  properties: Property[] = [];
+
+  /** Subscription to the PropertyService stream. */
+  private sub?: Subscription;
+
   /**
-   * List of properties to display in the gallery.
-   *
-   * For now, this comes from a static constant (PROPERTIES).
-   * Later you can:
-   *  - Replace it with an HTTP call to a backend,
-   *  - Or load it from a JSON file / database.
+   * Filter model bound to inputs via [(ngModel)].
    */
-  properties: Property[] = PROPERTIES;
+  filters = {
+    minPrice: null as number | null,
+    maxPrice: null as number | null,
+    minBeds: null as number | null,
+    city: '' as string
+  };
+
+  constructor(private propertyService: PropertyService) {}
+
+  ngOnInit(): void {
+    this.sub = this.propertyService.getProperties().subscribe((list) => {
+      this.properties = list;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  /**
+   * Apply filters to the list of properties.
+   */
+  get filteredProperties(): Property[] {
+    return this.properties.filter((p) => {
+      if (this.filters.minPrice !== null && p.price < this.filters.minPrice) {
+        return false;
+      }
+      if (this.filters.maxPrice !== null && p.price > this.filters.maxPrice) {
+        return false;
+      }
+      if (this.filters.minBeds !== null && p.beds < this.filters.minBeds) {
+        return false;
+      }
+      if (this.filters.city.trim().length > 0) {
+        const cityFilter = this.filters.city.trim().toLowerCase();
+        if (!p.city.toLowerCase().includes(cityFilter)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  clearFilters(): void {
+    this.filters = {
+      minPrice: null,
+      maxPrice: null,
+      minBeds: null,
+      city: ''
+    };
+  }
 }

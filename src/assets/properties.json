@@ -1,0 +1,62 @@
+[
+  {
+    "id": "prop1",
+    "title": "Modern Family Kitchen",
+    "address": "123 Maple Street",
+    "city": "Cairo",
+    "price": 250000,
+    "beds": 3,
+    "baths": 2,
+    "area": 140,
+    "thumbnail": "assets/panos/pano1.jpg",
+    "panoId": "p1",
+    "images": [
+      "assets/panos/pano1.jpg"
+    ]
+  },
+  {
+    "id": "prop2",
+    "title": "Cozy Hallway A",
+    "address": "45 Garden Lane",
+    "city": "Cairo",
+    "price": 210000,
+    "beds": 2,
+    "baths": 1,
+    "area": 95,
+    "thumbnail": "assets/panos/pano2.jpg",
+    "panoId": "p2",
+    "images": [
+      "assets/panos/pano2.jpg"
+    ]
+  },
+  {
+    "id": "prop3",
+    "title": "Hallway B with Natural Light",
+    "address": "87 River Street",
+    "city": "Cairo",
+    "price": 230000,
+    "beds": 3,
+    "baths": 2,
+    "area": 120,
+    "thumbnail": "assets/panos/pano3.jpg",
+    "panoId": "p3",
+    "images": [
+      "assets/panos/pano3.jpg"
+    ]
+  },
+  {
+    "id": "prop4",
+    "title": "Bright Living Area",
+    "address": "10 Corniche Road",
+    "city": "Cairo",
+    "price": 320000,
+    "beds": 4,
+    "baths": 3,
+    "area": 180,
+    "thumbnail": "assets/panos/pano4.jpg",
+    "panoId": "p4",
+    "images": [
+      "assets/panos/pano4.jpg"
+    ]
+  }
+]

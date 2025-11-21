@@ -1,3 +1,40 @@
-<!-- app.html -->
-<router-outlet></router-outlet>
+<!-- src/app/app.html -->
 
+<div class="app-shell">
+  <!-- Global top navigation bar -->
+  <header class="navbar">
+    <div class="nav-inner">
+      <a class="logo" routerLink="/">Bety Realty</a>
+
+      <nav class="nav-links">
+             <a
+                 routerLink="/"
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{ exact: true }"
+                 >
+                 Home
+            </a>
+             <a routerLink="/gallery" routerLinkActive="active">
+            Gallery
+         </a>
+  <a routerLink="/login" routerLinkActive="active">
+    Admin
+  </a>
+</nav>
+
+    </div>
+  </header>
+
+  <!-- Page content -->
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Simple footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span class="footer-brand">Bety Realty</span>
+      <span class="footer-text">Virtual tours for modern homes</span>
+    </div>
+  </footer>
+</div>

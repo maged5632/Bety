@@ -1,21 +1,18 @@
-import { Routes } from '@angular/router';
-import { GalleryComponent } from './gallery/gallery.component';
-import { Pan360ViewerComponent } from './pan360-viewer/pan360-viewer.component';
-import { Home } from './home/home';
-import { PropertyDetailsComponent } from './property-details/property-details.component';
+// src/app/app.routes.ts
 
-/**
- * Application routes
- * -------------------
- * ''              → home page
- * 'gallery'       → property cards
- * 'property/:id'  → property details page
- * 'view/:id'      → full-screen 360 viewer
- */
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home';
+import { GalleryComponent } from './gallery/gallery.component';
+import { PropertyDetailsComponent } from './property-details/property-details.component';
+import { VirtualTourComponent } from './virtual-tour/virtual-tour';
+import { LoginComponent } from './login/login';
+import { AdminComponent } from './admin/admin';
+
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', component: Home },
+  { path: '', component: HomeComponent },
   { path: 'gallery', component: GalleryComponent },
   { path: 'property/:id', component: PropertyDetailsComponent },
-  { path: 'view/:id', component: Pan360ViewerComponent },
-  { path: '**', redirectTo: '' }
+  { path: 'view/:panoId', component: VirtualTourComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'admin', component: AdminComponent }
 ];

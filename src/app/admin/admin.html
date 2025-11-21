@@ -1,0 +1,204 @@
+<!-- src/app/admin/admin.html -->
+
+<div class="page">
+  @if (canAccess) {
+    <section class="card">
+      <div class="header">
+        <div>
+          <h1>Admin panel</h1>
+          <p class="subtitle">
+            View, add, edit, and delete properties. Changes are kept in memory while the app is running.
+          </p>
+        </div>
+
+        <button class="logout" type="button" (click)="logout()">
+          Log out
+        </button>
+      </div>
+
+      <!-- Existing properties list -->
+      <section class="list-section">
+        <h2 class="section-title">Existing properties</h2>
+
+        @if (properties.length === 0) {
+          <p class="empty">No properties loaded.</p>
+        } @else {
+          <div class="prop-list">
+            @for (p of properties; track p.id) {
+              <div class="prop-row">
+                <div class="prop-main">
+                  <div class="prop-title">{{ p.title }}</div>
+                  <div class="prop-meta">
+                    {{ p.city }} • ${{ p.price }} • {{ p.beds }} bd / {{ p.baths }} ba
+                  </div>
+                </div>
+                <div class="prop-actions">
+                  <button type="button" class="btn-small" (click)="startEdit(p)">
+                    Edit
+                  </button>
+                  <button type="button" class="btn-small danger" (click)="delete(p)">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Divider -->
+      <hr class="divider" />
+
+      <!-- Add / Edit form -->
+      <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
+        @if (editingId) {
+          <h2 class="section-title">Edit property</h2>
+        } @else {
+          <h2 class="section-title">Add new property</h2>
+        }
+
+        <div class="field-row">
+          <div class="field">
+            <label>Title</label>
+            <input
+              name="title"
+              required
+              [(ngModel)]="newProperty.title"
+            />
+          </div>
+
+          <div class="field">
+            <label>City</label>
+            <input
+              name="city"
+              required
+              [(ngModel)]="newProperty.city"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Address</label>
+          <input
+            name="address"
+            required
+            [(ngModel)]="newProperty.address"
+          />
+        </div>
+
+        <h3 class="section-subtitle">Numbers</h3>
+
+        <div class="field-row">
+          <div class="field small">
+            <label>Price</label>
+            <input
+              type="number"
+              name="price"
+              [(ngModel)]="newProperty.price"
+            />
+          </div>
+
+          <div class="field small">
+            <label>Beds</label>
+            <input
+              type="number"
+              name="beds"
+              [(ngModel)]="newProperty.beds"
+            />
+          </div>
+
+          <div class="field small">
+            <label>Baths</label>
+            <input
+              type="number"
+              name="baths"
+              [(ngModel)]="newProperty.baths"
+            />
+          </div>
+
+          <div class="field small">
+            <label>Area (m²)</label>
+            <input
+              type="number"
+              name="area"
+              [(ngModel)]="newProperty.area"
+            />
+          </div>
+        </div>
+
+        <h3 class="section-subtitle">Images & 360</h3>
+
+        <div class="field">
+          <label>Thumbnail URL</label>
+          <input
+            name="thumbnail"
+            [(ngModel)]="newProperty.thumbnail"
+            placeholder="assets/panos/pano1.jpg"
+          />
+        </div>
+
+        <div class="field">
+          <label>360 pano ID (p1, p2, ...)</label>
+          <input
+            name="panoId"
+            [(ngModel)]="newProperty.panoId"
+            placeholder="p1"
+          />
+        </div>
+
+        <div class="field">
+          <label>Extra image URLs (comma-separated)</label>
+          <input
+            [value]="imagesAsText"
+            (input)="updateImagesFromText($any($event.target).value)"
+            placeholder="assets/panos/pano1.jpg, assets/photos/kitchen-2.jpg"
+          />
+        </div>
+
+        <div class="form-buttons">
+          <button
+            class="btn-primary"
+            type="submit"
+            [disabled]="!f.valid"
+          >
+            @if (editingId) { Save changes } @else { Add property }
+          </button>
+
+          @if (editingId) {
+            <button
+              type="button"
+              class="btn-secondary"
+              (click)="cancelEdit()"
+            >
+              Cancel edit
+            </button>
+          }
+        </div>
+
+        @if (successMessage) {
+          <p class="success">
+            {{ successMessage }}
+          </p>
+        }
+
+        <p class="back-link">
+          <a routerLink="/gallery">← Back to gallery</a>
+        </p>
+      </form>
+    </section>
+  } @else {
+    <!-- Not logged in -->
+    <section class="card">
+      <h1>Admin area</h1>
+      <p class="subtitle">
+        You must log in to access this page.
+      </p>
+      <a class="btn-primary" routerLink="/login">
+        Go to login
+      </a>
+      <p class="back-link">
+        <a routerLink="/gallery">← Back to gallery</a>
+      </p>
+    </section>
+  }
+</div>

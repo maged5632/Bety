@@ -1,76 +1,134 @@
 <!-- src/app/property-details/property-details.component.html -->
 
-<section class="details" *ngIf="property(); else notFound">
-  <div class="header">
-    <h1 class="title">{{ property()!.title }}</h1>
-    <p class="address">
-      {{ property()!.address }}, {{ property()!.city }}
-    </p>
-  </div>
-
-  <div class="layout">
-    <!-- Left side: big hero image -->
-    <div class="media">
-      <img
-        class="hero-image"
-        [src]="property()!.thumbnail"
-        [alt]="property()!.title"
-      />
-    </div>
-
-    <!-- Right side: core info + CTAs -->
-    <div class="info">
-      <div class="price">
-        ${{ property()!.price | number:'1.0-0' }}
+<div class="property-page">
+  @if (property; as p) {
+    <section class="details">
+      <div class="header">
+        <h1 class="title">{{ p!.title }}</h1>
+        <p class="address">{{ p!.address }}, {{ p!.city }}</p>
       </div>
 
-      <div class="stats">
-        <span>{{ property()!.beds }} bd</span>
-        <span>{{ property()!.baths }} ba</span>
-        <span>{{ property()!.area }} m²</span>
+      <div class="layout">
+        <!-- LEFT: hero image + thumbnails -->
+        <div class="media">
+          <img
+            class="hero-image"
+            [src]="heroImageUrl"
+            [alt]="p!.title"
+          />
+
+          <!-- Thumbnail strip (only if there are images) -->
+          @if (p!.images?.length && p!.images!.length > 1) {
+            <div class="thumb-strip">
+              @for (img of p!.images; track img; let i = $index) {
+                <button
+                  type="button"
+                  class="thumb-btn"
+                  [class.active]="i === activeImageIndex"
+                  (click)="selectImage(i)"
+                >
+                  <img
+                    [src]="img"
+                    [alt]="p!.title + ' photo ' + (i + 1)"
+                  />
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- RIGHT: price, stats, description, links -->
+        <div class="info">
+          <div class="price">${{ p!.price | number:'1.0-0' }}</div>
+
+          <div class="stats">
+            <span>{{ p!.beds }} bd</span>
+            <span>{{ p!.baths }} ba</span>
+            <span>{{ p!.area }} m²</span>
+          </div>
+
+          <p class="description">
+            Beautifully presented property with modern finishes and an open layout.
+            Explore the 360° virtual tour to get a realistic feel of the space.
+          </p>
+
+          @if (tourLink) {
+            <a class="btn-primary" [routerLink]="tourLink">
+              Open full-screen 360° tour
+            </a>
+          }
+
+          <a class="back-link" [routerLink]="['/gallery']">
+            ← Back to gallery
+          </a>
+        </div>
       </div>
 
-      <p class="description">
-        <!-- Placeholder description for now. Later this can come from the backend. -->
-        Beautifully presented property with modern finishes and an open layout.
-        Explore the full 360° virtual tour to get a realistic feel of the space
-        before visiting in person.
-      </p>
+      <!-- Inline 360 viewer -->
+      @if (panoIndex !== null) {
+        <div class="inline-tour">
+          <h2 class="inline-title">360° Virtual Tour</h2>
+          <app-virtual-tour [panoIndex]="panoIndex"></app-virtual-tour>
+        </div>
+      }
 
-      <!-- Button to open legacy full-screen viewer (optional) -->
-      <a
-        *ngIf="tourLink"
-        class="btn-primary"
-        [routerLink]="tourLink"
-      >
-        Open full-screen 360° tour
-      </a>
+      <!-- Contact form -->
+      <section class="contact-section">
+        <h2 class="contact-title">Contact Agent</h2>
 
-      <a class="back-link" [routerLink]="['/gallery']">
-        ← Back to gallery
-      </a>
-    </div>
-  </div>
+        @if (submitted) {
+          <p class="contact-success">
+            ✔ Thank you! We received your request.
+          </p>
+        }
 
-  <!--
-    Inline virtual tour
-    --------------------
-    This uses the VirtualTourComponent with [panoIndex] input.
-    It will show the correct pano for this property based on panoId.
-  -->
-  <div class="inline-tour" *ngIf="panoIndex !== null">
-    <h2 class="inline-title">360° Virtual Tour</h2>
-    <app-virtual-tour [panoIndex]="panoIndex"></app-virtual-tour>
-  </div>
-</section>
+        <form
+          #contactForm="ngForm"
+          (ngSubmit)="onSubmit()"
+          class="contact-form"
+          novalidate
+        >
+          <div class="field-row">
+            <div class="field">
+              <label>Name</label>
+              <input name="name" required [(ngModel)]="contact.name" />
+            </div>
 
-<!-- Fallback when id is invalid or property not found -->
-<ng-template #notFound>
-  <section class="details">
-    <h1>Property not found</h1>
-    <p>The property you are looking for does not exist.</p>
-    <a class="back-link" [routerLink]="['/gallery']">
-      ← Back to gallery
-    </a>
-  </section>
-</ng-template>
+            <div class="field">
+              <label>Email</label>
+              <input name="email" type="email" required [(ngModel)]="contact.email" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Phone</label>
+            <input name="phone" type="tel" [(ngModel)]="contact.phone" />
+          </div>
+
+          <div class="field">
+            <label>Message</label>
+            <textarea
+              name="message"
+              rows="4"
+              required
+              [(ngModel)]="contact.message"
+            ></textarea>
+          </div>
+
+          <button
+            class="btn-primary"
+            type="submit"
+            [disabled]="!contactForm.valid"
+          >
+            Send Message
+          </button>
+        </form>
+      </section>
+    </section>
+  } @else {
+    <section class="details">
+      <h1>Property not found</h1>
+      <a class="back-link" [routerLink]="['/gallery']">← Back to gallery</a>
+    </section>
+  }
+</div>

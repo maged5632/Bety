@@ -1,60 +1,103 @@
 <!-- src/app/gallery/gallery.component.html -->
 
-<!--
-  Main gallery wrapper.
-  We only render the list if "properties" is defined and not empty.
--->
-<div class="wrap" *ngIf="properties && properties.length > 0; else empty">
-  <!--
-    One card per property.
-    Clicking the card routes to /view/:panoId, which uses your existing
-    full-screen Pannellum viewer.
-  -->
- <a
-  class="card"
-  *ngFor="let p of properties"
-  [routerLink]="['/property', p.id]"
->
-  <!-- rest of the card stays the same -->
-    <!-- Property thumbnail image -->
-    <img
-      class="thumb"
-      [src]="p.thumbnail"
-      [alt]="p.title"
-      loading="lazy"
-    />
+<div class="gallery-page">
+  <!-- Header -->
+  <header class="gallery-header">
+    <h1 class="title">Browse properties</h1>
+    <p class="subtitle">
+      Use the filters below to narrow down by price, bedrooms, or city.
+    </p>
+  </header>
 
-    <!-- Text block under the image -->
-    <div class="meta">
-      <!-- Price formatted with Angular's DecimalPipe ("number" pipe) -->
-      <div class="price">
-        ${{ p.price | number:'1.0-0' }}
-      </div>
-
-      <!-- Main title and address line -->
-      <h3 class="title">{{ p.title }}</h3>
-
-      <p class="address">
-        {{ p.address }}, {{ p.city }}
-      </p>
-
-      <!-- Small row of key stats: beds, baths, area -->
-      <div class="stats">
-        <span>{{ p.beds }} bd</span>
-        <span>{{ p.baths }} ba</span>
-        <span>{{ p.area }} m²</span>
-      </div>
-
-      <!-- Simple call-to-action -->
-      <p class="cta">Open 360° view</p>
+  <!-- Filters bar -->
+  <section class="filters">
+    <div class="filter-group">
+      <label>Min price</label>
+      <input
+        type="number"
+        [(ngModel)]="filters.minPrice"
+        placeholder="e.g. 200000"
+      />
     </div>
-  </a>
-</div>
 
-<!--
-  Fallback UI if there are no properties.
-  Angular will show this template when the *ngIf condition above is false.
--->
-<ng-template #empty>
-  <p class="empty">No properties found.</p>
-</ng-template>
+    <div class="filter-group">
+      <label>Max price</label>
+      <input
+        type="number"
+        [(ngModel)]="filters.maxPrice"
+        placeholder="e.g. 400000"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Min beds</label>
+      <input
+        type="number"
+        [(ngModel)]="filters.minBeds"
+        placeholder="e.g. 3"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>City</label>
+      <input
+        type="text"
+        [(ngModel)]="filters.city"
+        placeholder="e.g. Cairo"
+      />
+    </div>
+
+    <button type="button" class="btn-clear" (click)="clearFilters()">
+      Clear filters
+    </button>
+  </section>
+
+  <!-- Results count -->
+  <p class="results-info">
+    Found {{ filteredProperties.length }} property<span *ngIf="filteredProperties.length !== 1">ies</span>.
+  </p>
+
+  <!-- Cards grid -->
+  <section class="cards-grid">
+    <!-- No results -->
+    <p *ngIf="filteredProperties.length === 0" class="empty">
+      No properties match your filters. Try adjusting the search.
+    </p>
+
+    <!-- Property cards -->
+    <article
+      *ngFor="let p of filteredProperties"
+      class="card"
+      [routerLink]="['/property', p.id]"
+    >
+      <!-- Thumbnail -->
+      <div class="card-image">
+        <img
+          [src]="p.thumbnail"
+          [alt]="p.title"
+        />
+      </div>
+
+      <!-- Content -->
+      <div class="card-body">
+        <h2 class="card-title">{{ p.title }}</h2>
+
+        <p class="card-location">
+          {{ p.city }} • {{ p.address }}
+        </p>
+
+        <p class="card-price">
+          ${{ p.price | number:'1.0-0' }}
+        </p>
+
+        <p class="card-stats">
+          {{ p.beds }} bd • {{ p.baths }} ba • {{ p.area }} m²
+        </p>
+
+        <span class="card-link">
+          View details →
+        </span>
+      </div>
+    </article>
+  </section>
+</div>

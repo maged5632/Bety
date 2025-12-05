@@ -1,148 +1,181 @@
 // src/app/virtual-tour/virtual-tour.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
-import {
-  Component,
-  AfterViewInit,
-  ViewChild,
-  ElementRef,
-  Input
-} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { NgFor, NgIf } from '@angular/common';
-
-// pannellum is loaded globally in index.html, so we declare it here
 declare const pannellum: any;
 
-/**
- * PanoInfo
- * --------
- * Matches the structure of each entry in /assets/panos/manifest.json
- */
-
-interface PanoInfo {
-  name: string; // e.g. "pano1.jpg"
-  src: string;  // e.g. "assets/panos/pano1.jpg"
-  width: number;
-  height: number;
+interface PanoManifestItem {
+  name: string;
+  src: string;
+  width?: number;
+  height?: number;
 }
 
-/**
- * VirtualTourComponent
- * --------------------
- * A reusable 360° viewer component.
- *
- * - It loads the list of panos from /assets/panos/manifest.json.
- * - It can optionally accept an initial pano index via @Input() panoIndex.
- * - It renders a pannellum viewer and buttons to switch scenes.
- */
+// فرق الزاوية بين اتجاهين (0–180 درجة)
+function yawDiff(a: number, b: number): number {
+  let d = (a - b) % 360;
+  if (d < -180) d += 360;
+  if (d > 180) d -= 360;
+  return Math.abs(d);
+}
+
 @Component({
   selector: 'app-virtual-tour',
   standalone: true,
   templateUrl: './virtual-tour.html',
-  styleUrl: './virtual-tour.css',
-  imports: [NgFor, NgIf]
+  styleUrls: ['./virtual-tour.css'],
 })
-export class VirtualTourComponent implements AfterViewInit {
-
-  /**
-   * Reference to the <div #panoRef> in the template.
-   * This is the container where pannellum will draw the 360 viewer.
-   */
-  @ViewChild('panoRef', { static: true })
-  panoRef!: ElementRef<HTMLDivElement>;
-
-  /**
-   * Optional input: index of the pano to show first.
-   *
-   * Example:
-   *   <app-virtual-tour [panoIndex]="2"></app-virtual-tour>
-   *
-   * If null or out of range, the component falls back to index 0.
-   */
-  @Input() panoIndex: number | null = null;
-
-  /** All panos loaded from manifest.json */
-  panos: PanoInfo[] = [];
-
-  /** Currently active pano index (used for highlighting buttons, etc.) */
-  currentIndex = 0;
-
-  /** pannellum viewer instance */
+export class VirtualTourComponent implements OnInit, OnDestroy {
   private viewer: any;
+  private clickHandler?: (ev: MouseEvent) => void;
 
-  constructor(private http: HttpClient) {}
+  constructor(private route: ActivatedRoute) {}
 
-  ngAfterViewInit(): void {
-    // Step 1: load the pano manifest from /assets
-    this.http.get<PanoInfo[]>('/assets/panos/manifest.json').subscribe({
-      next: (data) => {
-        console.log('Manifest loaded successfully:', data);
-        this.panos = data || [];
+  async ngOnInit(): Promise<void> {
+    try {
+      // 1) نحمّل ملف المانيفست القديم من assets/panos/manifest.json
+      const response = await fetch('assets/panos/manifest.json');
+      const manifest = (await response.json()) as PanoManifestItem[];
 
-        if (!this.panos.length) {
-          console.warn('Manifest is empty, nothing to show.');
-          return;
-        }
+      console.log('Manifest loaded successfully:', manifest);
 
-        // Decide which pano to show first:
-        // - if panoIndex input is valid, use it
-        // - otherwise fall back to 0
-        let initial = this.panoIndex ?? 0;
-        if (initial < 0 || initial >= this.panos.length) {
-          initial = 0;
-        }
-        this.currentIndex = initial;
-
-        this.initViewer(this.panos[initial]);
-      },
-      error: (err) => {
-        console.error('Error loading manifest.json:', err);
+      if (!manifest || !manifest.length) {
+        console.error('Manifest is empty or missing');
+        return;
       }
-    });
-  }
 
-  /**
-   * Initialise pannellum viewer with a given pano.
-   * If viewer already exists, just switch its panorama.
-   */
-  private initViewer(pano: PanoInfo): void {
-    if (!this.panoRef?.nativeElement) {
-      console.error('panoRef is not available.');
-      return;
-    }
+      // 2) نبني إعدادات المشاهد لـ pannellum
+      // هنستخدم ids: p1, p2, p3, p4 ...
+      const scenesConfig: Record<string, any> = {};
 
-    // First-time setup: create a new pannellum viewer
-    if (!this.viewer) {
-      this.viewer = pannellum.viewer(this.panoRef.nativeElement, {
-        type: 'equirectangular',
-        panorama: pano.src,
-        autoLoad: true,
-        showControls: true,
-        compass: false,
-        hfov: 100,
-        yaw: 0,
-        pitch: 0
+      manifest.forEach((item, index) => {
+        const id = `p${index + 1}`;
+
+        const hotSpots: any[] = [];
+
+        // رابط للمشهد السابق
+        if (index > 0) {
+          hotSpots.push({
+            pitch: 0,
+            yaw: 180,
+            type: 'scene',
+            sceneId: `p${index}`,
+            text: 'Back',
+          });
+        }
+
+        // رابط للمشهد التالي
+        if (index < manifest.length - 1) {
+          hotSpots.push({
+            pitch: 0,
+            yaw: 0,
+            type: 'scene',
+            sceneId: `p${index + 2}`,
+            text: 'Next',
+          });
+        }
+
+        scenesConfig[id] = {
+          type: 'equirectangular',
+          panorama: item.src,
+          autoLoad: true,
+          showControls: true,
+          doubleClickZoom: false,
+          hfov: 110,
+          pitch: 0,
+          yaw: 0,
+          hotSpots,
+        };
       });
 
-      console.log('Pannellum viewer initialised with', pano.src);
-      return;
+      // 3) نحدد المشهد الأول من الـ Route (/view/:id) أو p1
+      const routeId = this.route.snapshot.paramMap.get('id');
+      const firstSceneId =
+        routeId && scenesConfig[routeId] ? routeId : 'p1';
+
+      // 4) إنشاء pannellum viewer
+      this.viewer = pannellum.viewer('panorama', {
+        default: {
+          firstScene: firstSceneId,
+          sceneFadeDuration: 1000,
+        },
+        scenes: scenesConfig,
+      });
+
+      console.log(
+        'Pannellum viewer initialised with',
+        scenesConfig[firstSceneId].panorama
+      );
+
+      // 5) لو الـ Route اتغيّر (مثلاً /view/p3) نحمل المشهد المناسب
+      this.route.paramMap.subscribe((pm) => {
+        const id = pm.get('id');
+        if (!id || !this.viewer) return;
+        if (id !== this.viewer.getScene() && scenesConfig[id]) {
+          this.viewer.loadScene(id, 0, 0, { transitionDuration: 800 });
+        }
+      });
+
+      // 6) click-anywhere → نروح لأقرب hotspot من نوع scene
+      const container = this.viewer.getContainer();
+
+      this.clickHandler = (ev: MouseEvent) => {
+        if (!this.viewer) return;
+
+        const coords = this.viewer.mouseEventToCoords(ev);
+        if (!coords) return;
+
+        const [, clickYaw] = coords;
+
+        const config: any = this.viewer.getConfig();
+        const currentSceneId: string = this.viewer.getScene();
+        const sceneCfg = config.scenes?.[currentSceneId];
+
+        if (!sceneCfg) return;
+
+        const hotspots: any[] = (sceneCfg.hotSpots || []).filter(
+          (h: any) => h.type === 'scene' && h.sceneId
+        );
+
+        if (!hotspots.length) return;
+
+        let best: any | undefined;
+        let bestDiff = Infinity;
+
+        for (const h of hotspots) {
+          const diff = yawDiff(clickYaw, h.yaw ?? 0);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            best = h;
+          }
+        }
+
+        // نخليها واسعة في الأول علشان أي كليك تقريباً يشتغل
+        const THRESHOLD = 180;
+
+        if (best && best.sceneId && bestDiff <= THRESHOLD) {
+          this.viewer.loadScene(best.sceneId, best.pitch, best.yaw, {
+            transitionDuration: 600,
+          });
+        }
+      };
+
+      container.addEventListener('click', this.clickHandler);
+    } catch (err) {
+      console.error('Error loading manifest.json', err);
     }
-
-    // If viewer already exists, just switch the image
-    this.viewer.setPanorama(pano.src);
-    console.log('Pannellum viewer switched to', pano.src);
   }
 
-  /**
-   * Called when a thumbnail/button is clicked in the template.
-   * Updates the currentIndex and loads the new pano into pannellum.
-   */
-  switchTo(index: number): void {
-    if (!this.panos[index] || !this.viewer) return;
-    this.currentIndex = index;
-    const pano = this.panos[index];
-    this.viewer.setPanorama(pano.src);
-    console.log('Switched to pano:', pano.src);
+  ngOnDestroy(): void {
+    try {
+      if (this.clickHandler && this.viewer) {
+        const container = this.viewer.getContainer();
+        container.removeEventListener('click', this.clickHandler);
+      }
+    } catch {}
+
+    try {
+      this.viewer?.destroy?.();
+    } catch {}
   }
-  
 }

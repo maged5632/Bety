@@ -1,138 +1,29 @@
-<!-- src/app/home/home.html -->
+<div class="home-hero">
+  <div class="home-hero__content">
+    <h1 class="home-hero__title">
+      اكتشف عقارك بسهولة مع منصّة <span class="brand">Bety</span>
+    </h1>
 
-<div class="home-page">
-  <!-- HERO SECTION -->
-  <section class="hero-row">
-    <div class="hero-text">
-      <!-- عنوان عام للموقع مش للـ virtual tour -->
-      <h1 class="main-title">Find your next home with Bety Realty</h1>
-
-      <p class="sub-text">
-        Browse modern apartments and family homes with high-quality photos
-        and detailed information. Start by exploring all properties in our gallery.
-      </p>
-
-      <div class="btn-row">
-        <!-- زر واحد بس يفتح الجاليري -->
-        <a class="btn-primary" [routerLink]="['/gallery']">
-          Browse all properties
-        </a>
-
-        <!-- زر إضافي اختياري لعقار مميز (بدون 360) -->
-       
-      </div>
-    </div>
-
-    <div class="hero-card">
-      <h2 class="hero-card-title">Why use Bety Realty?</h2>
-      <ul>
-        <li>See clear photos and realistic views of each property.</li>
-        <li>Compare prices, size, and location in one place.</li>
-        <li>Contact the agent directly from the property page.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- SEARCH / FILTER STRIP (UI ONLY) -->
-  <section class="search-strip">
-    <h2 class="section-title">Quick search</h2>
-
-    <form class="search-form" novalidate>
-      <div class="field">
-        <label>City</label>
-        <input placeholder="e.g. Cairo" />
-      </div>
-
-      <div class="field">
-        <label>Min price</label>
-        <input type="number" placeholder="e.g. 200000" />
-      </div>
-
-      <div class="field">
-        <label>Max price</label>
-        <input type="number" placeholder="e.g. 400000" />
-      </div>
-
-      <div class="field">
-        <label>Bedrooms</label>
-        <input type="number" placeholder="e.g. 3" />
-      </div>
-
-      <!-- زر يبحث في الجاليري (بس مجرد انتقال) -->
-      <button
-        type="button"
-        class="btn-search"
-        [routerLink]="['/gallery']"
-      >
-        Search in gallery
-      </button>
-    </form>
-
-    <p class="search-hint">
-      Use the filters inside the gallery page to get real search results.
+    <p class="home-hero__subtitle">
+      منصّة تجمع بين عرض العقارات بطريقة تقليدية مع صور واضحة،
+      وجولة افتراضية ٣٦٠ درجة تساعدك تعيش التجربة من بيتك قبل ما تروح بنفسك.
     </p>
-  </section>
 
-  <!-- FEATURED PROPERTIES (روابط لعقارات حقيقية) -->
-  <section class="featured">
-    <div class="featured-header">
-      <h2 class="section-title">Featured properties</h2>
-      <a class="view-all-link" [routerLink]="['/gallery']">
-        View all properties →
+    <div class="home-hero__actions">
+      <!-- عدّل الـ routerLink حسب مسار صفحة العقارات عندك -->
+      <a class="btn btn-primary" routerLink="/properties">
+        ابدأ الآن
+      </a>
+
+      <!-- عدّل /register لو عندك صفحة تسجيل، أو خليه رابط واتساب/اتصال -->
+      <a class="btn btn-secondary" routerLink="/register">
+        سجّل الآن
       </a>
     </div>
 
-    <div class="featured-grid">
-      <!-- Card 1 -->
-      <article class="featured-card">
-        <img
-          src="assets/panos/pano1.jpg"
-          alt="Modern family kitchen"
-          class="featured-thumb"
-        />
-        <div class="featured-body">
-          <h3 class="featured-title">Modern Family Kitchen</h3>
-          <p class="featured-meta">3 bd • 2 ba • 140 m² • Cairo</p>
-          <p class="featured-price">$250,000</p>
-          <a class="featured-link" [routerLink]="['/property', 'prop1']">
-            View details
-          </a>
-        </div>
-      </article>
-
-      <!-- Card 2 -->
-      <article class="featured-card">
-        <img
-          src="assets/panos/pano2.jpg"
-          alt="Bright living area"
-          class="featured-thumb"
-        />
-        <div class="featured-body">
-          <h3 class="featured-title">Bright Living Area</h3>
-          <p class="featured-meta">4 bd • 3 ba • 180 m² • Cairo</p>
-          <p class="featured-price">$320,000</p>
-          <a class="featured-link" [routerLink]="['/property', 'prop2']">
-            View details
-          </a>
-        </div>
-      </article>
-
-      <!-- Card 3 -->
-      <article class="featured-card">
-        <img
-          src="assets/panos/pano3.jpg"
-          alt="Cozy entrance"
-          class="featured-thumb"
-        />
-        <div class="featured-body">
-          <h3 class="featured-title">Cozy Entrance Suite</h3>
-          <p class="featured-meta">2 bd • 1 ba • 95 m² • Giza</p>
-          <p class="featured-price">$210,000</p>
-          <a class="featured-link" [routerLink]="['/property', 'prop3']">
-            View details
-          </a>
-        </div>
-      </article>
-    </div>
-  </section>
+    <p class="home-hero__hint">
+      يمكنك تصفح تفاصيل كل عقار بالصور العادية، ثم الدخول للجولة الافتراضية
+      من الزر الخاص بها داخل صفحة العقار.
+    </p>
+  </div>
 </div>

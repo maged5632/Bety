@@ -11,6 +11,8 @@ import { AuthService } from '../auth.service';
  * Simple login form for the admin area.
  * Uses AuthService with hard-coded credentials.
  */
+
+
 @Component({
   selector: 'app-login',
   standalone: true,

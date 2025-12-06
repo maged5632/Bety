@@ -1,0 +1,31 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1 class="title">تسجيل دخول المستخدم</h1>
+    <p class="subtitle">
+      سجّل دخولك بحسابك الذي أنشأته من قبل كمستخدم عادي.
+    </p>
+
+    <form (ngSubmit)="onSubmit()" class="form">
+      <label class="field">
+        <span>البريد الإلكتروني</span>
+        <input type="email" [(ngModel)]="email" name="email" />
+      </label>
+
+      <label class="field">
+        <span>كلمة المرور</span>
+        <input type="password" [(ngModel)]="password" name="password" />
+      </label>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+
+      <button class="btn" type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'جارٍ تسجيل الدخول...' : 'تسجيل الدخول' }}
+      </button>
+
+      <p class="hint">
+        ليس لديك حساب؟ <a routerLink="/register">أنشئ حساب جديد</a>
+      </p>
+    </form>
+  </div>
+</div>

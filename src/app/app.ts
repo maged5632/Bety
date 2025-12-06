@@ -1,15 +1,14 @@
 // src/app/app.ts
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { ChatbotWidgetComponent } from './shared/chatbot-widget/chatbot-widget';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-
-  // IMPORTANT: Add RouterLink and RouterLinkActive here
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
-
+  imports: [RouterOutlet,RouterLink, RouterLinkActive, ChatbotWidgetComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css'],
 })
+
 export class App {}

@@ -1,5 +1,5 @@
 // src/app/virtual-tour/virtual-tour.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 declare const pannellum: any;
@@ -27,13 +27,36 @@ function yawDiff(a: number, b: number): number {
 })
 export class VirtualTourComponent implements OnInit, OnDestroy {
   private viewer: any;
-  private clickHandler?: (ev: MouseEvent) => void;
+
+  // جاي من صفحة العقار عشان نحدد أي صورة تبدأ
+  @Input() panoIndex: number | null = null;
+
+  // handlers عشان نفصل الـ events في ngOnDestroy
+  private mouseDownHandler?: (ev: MouseEvent) => void;
+  private mouseMoveHandler?: (ev: MouseEvent) => void;
+  private mouseUpHandler?: (ev: MouseEvent) => void;
+
+  // بيانات للـ overlay
+  private manifest: PanoManifestItem[] = [];
+  currentIndex = 0;
+  totalScenes = 0;
+  currentName = '';
 
   constructor(private route: ActivatedRoute) {}
 
+  private updateSceneInfo(sceneId: string) {
+    const idx = parseInt(sceneId.replace('p', ''), 10) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= this.manifest.length) {
+      return;
+    }
+    this.currentIndex = idx;
+    this.totalScenes = this.manifest.length;
+    this.currentName = this.manifest[idx]?.name || '';
+  }
+
   async ngOnInit(): Promise<void> {
     try {
-      // 1) نحمّل ملف المانيفست القديم من assets/panos/manifest.json
+      // 1) نحمّل manifest.json
       const response = await fetch('assets/panos/manifest.json');
       const manifest = (await response.json()) as PanoManifestItem[];
 
@@ -44,8 +67,10 @@ export class VirtualTourComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // 2) نبني إعدادات المشاهد لـ pannellum
-      // هنستخدم ids: p1, p2, p3, p4 ...
+      this.manifest = manifest;
+      this.totalScenes = manifest.length;
+
+      // 2) نبني scenesConfig لـ pannellum
       const scenesConfig: Record<string, any> = {};
 
       manifest.forEach((item, index) => {
@@ -53,25 +78,23 @@ export class VirtualTourComponent implements OnInit, OnDestroy {
 
         const hotSpots: any[] = [];
 
-        // رابط للمشهد السابق
         if (index > 0) {
           hotSpots.push({
             pitch: 0,
             yaw: 180,
             type: 'scene',
             sceneId: `p${index}`,
-            text: 'Back',
+            cssClass: 'nav-hotspot',
           });
         }
 
-        // رابط للمشهد التالي
         if (index < manifest.length - 1) {
           hotSpots.push({
             pitch: 0,
             yaw: 0,
             type: 'scene',
             sceneId: `p${index + 2}`,
-            text: 'Next',
+            cssClass: 'nav-hotspot',
           });
         }
 
@@ -88,10 +111,20 @@ export class VirtualTourComponent implements OnInit, OnDestroy {
         };
       });
 
-      // 3) نحدد المشهد الأول من الـ Route (/view/:id) أو p1
+      // 3) نحدد أول مشهد:
+      //    - لو /view/:id موجودة → نستخدمها
+      //    - لو جاي من صفحة العقار وعامل [panoIndex] → نستخدمه
+      let firstSceneId = 'p1';
+
       const routeId = this.route.snapshot.paramMap.get('id');
-      const firstSceneId =
-        routeId && scenesConfig[routeId] ? routeId : 'p1';
+      if (routeId && scenesConfig[routeId]) {
+        firstSceneId = routeId;
+      } else if (this.panoIndex != null) {
+        const idx = Math.max(0, Math.min(manifest.length - 1, this.panoIndex));
+        firstSceneId = `p${idx + 1}`;
+      }
+
+      this.updateSceneInfo(firstSceneId);
 
       // 4) إنشاء pannellum viewer
       this.viewer = pannellum.viewer('panorama', {
@@ -107,20 +140,49 @@ export class VirtualTourComponent implements OnInit, OnDestroy {
         scenesConfig[firstSceneId].panorama
       );
 
-      // 5) لو الـ Route اتغيّر (مثلاً /view/p3) نحمل المشهد المناسب
+      // لما المشهد يتغير من جوه pannellum (مثلاً hotSpot)
+      this.viewer.on('scenechange', (sceneId: string) => {
+        this.updateSceneInfo(sceneId);
+      });
+
+      // 5) لو اتغير /view/:id من الراوتر
       this.route.paramMap.subscribe((pm) => {
         const id = pm.get('id');
         if (!id || !this.viewer) return;
         if (id !== this.viewer.getScene() && scenesConfig[id]) {
           this.viewer.loadScene(id, 0, 0, { transitionDuration: 800 });
+          this.updateSceneInfo(id);
         }
       });
 
-      // 6) click-anywhere → نروح لأقرب hotspot من نوع scene
+      // 6) click-anywhere مع تمييز drag vs click
       const container = this.viewer.getContainer();
 
-      this.clickHandler = (ev: MouseEvent) => {
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+
+      this.mouseDownHandler = (ev: MouseEvent) => {
+        isDragging = false;
+        startX = ev.clientX;
+        startY = ev.clientY;
+      };
+
+      this.mouseMoveHandler = (ev: MouseEvent) => {
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+          isDragging = true;
+        }
+      };
+
+      this.mouseUpHandler = (ev: MouseEvent) => {
         if (!this.viewer) return;
+
+        // drag لتدوير الكاميرا → ما ننقلش
+        if (isDragging) {
+          return;
+        }
 
         const coords = this.viewer.mouseEventToCoords(ev);
         if (!coords) return;
@@ -150,17 +212,20 @@ export class VirtualTourComponent implements OnInit, OnDestroy {
           }
         }
 
-        // نخليها واسعة في الأول علشان أي كليك تقريباً يشتغل
-        const THRESHOLD = 180;
+        // تقدر تقللها لـ 80 لو عايز يبقى أدق
+        const THRESHOLD = 120;
 
         if (best && best.sceneId && bestDiff <= THRESHOLD) {
           this.viewer.loadScene(best.sceneId, best.pitch, best.yaw, {
             transitionDuration: 600,
           });
+          this.updateSceneInfo(best.sceneId);
         }
       };
 
-      container.addEventListener('click', this.clickHandler);
+      container.addEventListener('mousedown', this.mouseDownHandler);
+      container.addEventListener('mousemove', this.mouseMoveHandler);
+      container.addEventListener('mouseup', this.mouseUpHandler);
     } catch (err) {
       console.error('Error loading manifest.json', err);
     }
@@ -168,9 +233,16 @@ export class VirtualTourComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     try {
-      if (this.clickHandler && this.viewer) {
+      if (
+        this.viewer &&
+        this.mouseDownHandler &&
+        this.mouseMoveHandler &&
+        this.mouseUpHandler
+      ) {
         const container = this.viewer.getContainer();
-        container.removeEventListener('click', this.clickHandler);
+        container.removeEventListener('mousedown', this.mouseDownHandler);
+        container.removeEventListener('mousemove', this.mouseMoveHandler);
+        container.removeEventListener('mouseup', this.mouseUpHandler);
       }
     } catch {}
 

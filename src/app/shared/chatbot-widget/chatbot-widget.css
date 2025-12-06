@@ -1,0 +1,138 @@
+.chatbot-wrapper {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* زرار الفتح */
+.chatbot-toggle {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45);
+}
+
+/* نافذة الشات */
+.chatbot-window {
+  position: absolute;
+  bottom: 64px;
+  right: 0;
+  width: 320px;
+  max-height: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* الهيدر */
+.chatbot-header {
+  padding: 10px 12px;
+  background: #0f172a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatbot-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.chatbot-subtitle {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.chatbot-close {
+  border: none;
+  background: transparent;
+  color: #e5e7eb;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* الرسائل */
+.chatbot-messages {
+  flex: 1;
+  padding: 8px 10px;
+  overflow-y: auto;
+  background: #f3f4f6;
+}
+
+.msg {
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 85%;
+}
+
+.msg-bot {
+  background: #e5e7eb;
+  color: #111827;
+  align-self: flex-start;
+}
+
+.msg-user {
+  background: #0f172a;
+  color: #ffffff;
+  margin-left: auto;
+  text-align: right;
+}
+
+/* الأزرار السريعة */
+.chatbot-quick {
+  padding: 6px 8px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  background: #f9fafb;
+}
+
+.chatbot-quick button {
+  border: none;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+
+/* input */
+.chatbot-input {
+  display: flex;
+  padding: 6px;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.chatbot-input input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.chatbot-input button {
+  margin-right: 6px;
+  border-radius: 999px;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  background: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+}

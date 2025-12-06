@@ -1,0 +1,49 @@
+<div class="chatbot-wrapper">
+  <!-- زرار الفتح/الغلق -->
+  <button class="chatbot-toggle" (click)="toggle()">
+    💬
+  </button>
+
+  <!-- نافذة الشات -->
+  <div class="chatbot-window" *ngIf="isOpen">
+    <div class="chatbot-header">
+      <div>
+        <div class="chatbot-title">مساعد Bety</div>
+        <div class="chatbot-subtitle">اسألني عن استخدام الموقع والجولات</div>
+      </div>
+      <button class="chatbot-close" (click)="toggle()">✕</button>
+    </div>
+
+    <div class="chatbot-messages">
+      <div
+        *ngFor="let msg of messages"
+        class="msg"
+        [ngClass]="msg.from === 'user' ? 'msg-user' : 'msg-bot'"
+      >
+        {{ msg.text }}
+      </div>
+    </div>
+
+    <div class="chatbot-quick">
+      <button (click)="quickAsk('ازاي افتح الجولة الافتراضية؟')">
+        الجولة الافتراضية
+      </button>
+      <button (click)="quickAsk('عايز اعرف ازاي اسجل حساب؟')">
+        التسجيل
+      </button>
+      <button (click)="quickAsk('ازاي اتواصل معاكم؟')">
+        التواصل
+      </button>
+    </div>
+
+    <form class="chatbot-input" (ngSubmit)="sendMessage()">
+      <input
+        type="text"
+        [(ngModel)]="inputText"
+        name="chatInput"
+        placeholder="اكتب سؤالك هنا..."
+      />
+      <button type="submit">إرسال</button>
+    </form>
+  </div>
+</div>

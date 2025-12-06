@@ -1,6 +1,20 @@
-<h2>360° Virtual Tour</h2>
-
-<div class="tour-wrapper">
-  <!-- 👇 مهم جدًّا يكون نفس الـ id اللي في TypeScript -->
+<div class="tour-container">
   <div id="panorama"></div>
+
+  <!-- overlay فوق الصورة -->
+  <div class="tour-overlay">
+    <div class="tour-title-row">
+      <span class="scene-name">
+        {{ currentName || ('Scene ' + (currentIndex + 1)) }}
+      </span>
+
+      <span class="scene-count">
+        {{ currentIndex + 1 }} / {{ totalScenes }}
+      </span>
+    </div>
+
+    <div class="tour-hint">
+      Drag to look around · Click to move
+    </div>
+  </div>
 </div>

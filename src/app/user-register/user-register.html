@@ -1,0 +1,42 @@
+<div class="register-page">
+  <div class="register-card">
+    <h1 class="title">إنشاء حساب جديد</h1>
+    <p class="subtitle">
+      سجّل حساب كمستخدم عادي لتتمكن من حفظ العقارات المفضلة والتواصل بسهولة.
+    </p>
+
+    <form (ngSubmit)="onSubmit()" class="form">
+      <label class="field">
+        <span>الاسم الكامل</span>
+        <input type="text" [(ngModel)]="name" name="name" />
+      </label>
+
+      <label class="field">
+        <span>البريد الإلكتروني</span>
+        <input type="email" [(ngModel)]="email" name="email" />
+      </label>
+
+      <label class="field">
+        <span>كلمة المرور</span>
+        <input type="password" [(ngModel)]="password" name="password" />
+      </label>
+
+      <label class="field">
+        <span>تأكيد كلمة المرور</span>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" />
+      </label>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+
+      <button class="btn" type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'جارٍ إنشاء الحساب...' : 'إنشاء الحساب' }}
+      </button>
+
+      <p class="hint">
+        هذا الحساب مخصص للمستخدم العادي. تسجيل دخول الأدمن ما زال من صفحة
+        <strong>Admin</strong> الحالية.
+      </p>
+    </form>
+  </div>
+</div>

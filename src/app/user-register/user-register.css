@@ -1,0 +1,92 @@
+.register-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  background: #020617;
+  border-radius: 16px;
+  padding: 20px 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.6);
+  color: #e5e7eb;
+}
+
+.title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.field span {
+  color: #e5e7eb;
+}
+
+.field input {
+  border-radius: 10px;
+  border: 1px solid #4b5563;
+  padding: 8px 10px;
+  background: #020617;
+  color: #f9fafb;
+  font-size: 13px;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #22c55e;
+}
+
+.btn {
+  margin-top: 4px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #22c55e;
+  color: #020617;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error {
+  color: #f97373;
+  font-size: 12px;
+}
+
+.success {
+  color: #4ade80;
+  font-size: 12px;
+}
+
+.hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+}
